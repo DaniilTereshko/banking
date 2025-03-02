@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="001_create_model_tables" author="tdi">
+
+        <createTable tableName="account">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="number" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="balance" type="numeric" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="client">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="numeric">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="uuid">
+                <constraints foreignKeyName="fk_account_client" referencedTableName="account" referencedColumnNames="id"
+                             nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="card">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="number" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cvv" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="uuid">
+                <constraints foreignKeyName="fk_account_card" referencedTableName="account" referencedColumnNames="id"
+                             nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="transaction">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="from_id" type="uuid">
+                <constraints foreignKeyName="fk_card_transaction_from_id" referencedTableName="card" referencedColumnNames="id"
+                             nullable="false"/>
+            </column>
+            <column name="to_id" type="uuid">
+                <constraints foreignKeyName="fk_card_transaction_to_id" referencedTableName="card" referencedColumnNames="id"
+                             nullable="false"/>
+            </column>
+            <column name="amount" type="numeric">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="card_transaction">
+            <column name="card_id" type="uuid">
+                <constraints foreignKeyName="fk_card_card_transaction" referencedTableName="card"
+                             referencedColumnNames="id"
+                             nullable="false"/>
+            </column>
+            <column name="transaction_id" type="uuid">
+                <constraints foreignKeyName="fk_transaction_card_transaction" referencedTableName="transaction"
+                             referencedColumnNames="id"
+                             nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="card" columnNames="number, date" constraintName="uq_card_number_date"/>
+        <addUniqueConstraint tableName="card_transaction" columnNames="card_id, transaction_id"
+                             constraintName="uq_transaction_id_card_id_transaction_id"/>
+    </changeSet>
+
+</databaseChangeLog>

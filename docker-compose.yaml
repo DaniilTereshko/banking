@@ -1,0 +1,31 @@
+version: '3.0'
+
+services:
+  postgres:
+    image: 'postgres:15.1-alpine'
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - banking
+
+  pgadmin:
+    build: pgadmin
+    image: banking_pgadmin:1.0
+    ports:
+      - "82:80"
+    env_file:
+      - .env
+    networks:
+      - banking
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  banking:
+    driver: bridge
